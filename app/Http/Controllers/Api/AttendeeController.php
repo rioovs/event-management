@@ -19,6 +19,8 @@ class AttendeeController extends Controller
     public function __construct()
     {
         $this->middleware('auth:sanctum')->except('index', 'show', 'update');
+        $this->middleware('throttle:api')
+            ->only(['store', 'destroy']); //60 request in 1 minute
         $this->authorizeResource(Event::class, 'event');
     }
 
@@ -40,7 +42,7 @@ class AttendeeController extends Controller
     {
         $attendee = $this->loadRelationships(
             $event->attendees()->create([
-                'user_id' => 5
+                'user_id' => $request->user()->id
             ])
         );
 
